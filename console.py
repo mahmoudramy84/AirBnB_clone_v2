@@ -130,7 +130,7 @@ class HBNBCommand(cmd.Cmd):
 
         # Create an instance of the specified class
         new_instance = HBNBCommand.classes[class_name]()
-        print(args)
+
         # Parse parameters and set attributes
         for param in args[1:]:
             try:
