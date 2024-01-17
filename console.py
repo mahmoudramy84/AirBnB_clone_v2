@@ -2,7 +2,6 @@
 """ Console Module """
 import cmd
 import sys
-import shlex
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -155,8 +154,9 @@ class HBNBCommand(cmd.Cmd):
                 setattr(new_instance, key, value)
 
             except ValueError:
+                pass
                 # Skip if the parameter can't be recognized
-                print(f"Warning: Skipped invalid parameter: {param}")
+                #print(f"Warning: Skipped invalid parameter: {param}")
         storage.save()
         print(new_instance.id)
         storage.save()
