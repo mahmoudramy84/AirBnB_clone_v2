@@ -11,6 +11,8 @@ from models.city import City
 from models.amenity import Amenity
 from models.review import Review
 
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
 
 class HBNBCommand(cmd.Cmd):
     """ Contains the functionality for the HBNB console"""
@@ -18,11 +20,6 @@ class HBNBCommand(cmd.Cmd):
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
-    classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
-              }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
              'number_rooms': int, 'number_bathrooms': int,
@@ -114,52 +111,19 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
+        """Creates a new instance of a class"""
+        args = arg.split()
+        if len(args) == 0:
             print("** class name missing **")
-            return
-        # Split the arguments into class name and parameters
-        args = args.split()
-
-        class_name = (args[0])
-
-        if class_name not in HBNBCommand.classes:
+            return False
+        if args[0] in classes:
+            new_dict = self._key_value_parser(args[1:])
+            instance = classes[args[0]](**new_dict)
+        else:
             print("** class doesn't exist **")
-            return
-
-        # Create an instance of the specified class
-        new_instance = HBNBCommand.classes[class_name]()
-
-        # Parse parameters and set attributes
-        for param in args[1:]:
-            try:
-                # Split parameter into key and value
-                key, value = param.split('=')
-
-                # Replace underscores with spaces in key
-                value = value.replace('_', ' ')
-
-                # Check value type and format accordingly
-                if value[0] == '"' and value[-1] == '"':
-                    # String: replace escaped quotes
-                    value = value[1:-1].replace('\\"', '"').replace('"', r'\"')
-                elif '.' in value:
-                    # Float
-                    value = float(value)
-                else:
-                    # Integer
-                    value = int(value)
-
-                # Set the attribute on the instance
-                setattr(new_instance, key, value)
-
-            except ValueError:
-                pass
-                # Skip if the parameter can't be recognized
-                #print(f"Warning: Skipped invalid parameter: {param}")
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+            return False
+        print(instance.id)
+        instance.save()
 
     def help_create(self):
         """ Help information for the create method """
